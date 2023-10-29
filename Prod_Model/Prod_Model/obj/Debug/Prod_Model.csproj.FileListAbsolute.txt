@@ -1,0 +1,10 @@
+D:\ISlabs\Prod_Model\Prod_Model\Prod_Model\bin\Debug\Prod_Model.exe.config
+D:\ISlabs\Prod_Model\Prod_Model\Prod_Model\bin\Debug\Prod_Model.exe
+D:\ISlabs\Prod_Model\Prod_Model\Prod_Model\bin\Debug\Prod_Model.pdb
+D:\ISlabs\Prod_Model\Prod_Model\Prod_Model\obj\Debug\Prod_Model.csproj.AssemblyReference.cache
+D:\ISlabs\Prod_Model\Prod_Model\Prod_Model\obj\Debug\Prod_Model.Form1.resources
+D:\ISlabs\Prod_Model\Prod_Model\Prod_Model\obj\Debug\Prod_Model.Properties.Resources.resources
+D:\ISlabs\Prod_Model\Prod_Model\Prod_Model\obj\Debug\Prod_Model.csproj.GenerateResource.cache
+D:\ISlabs\Prod_Model\Prod_Model\Prod_Model\obj\Debug\Prod_Model.csproj.CoreCompileInputs.cache
+D:\ISlabs\Prod_Model\Prod_Model\Prod_Model\obj\Debug\Prod_Model.exe
+D:\ISlabs\Prod_Model\Prod_Model\Prod_Model\obj\Debug\Prod_Model.pdb
