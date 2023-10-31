@@ -146,6 +146,38 @@ namespace Prod_Model
                 resultes.SetSelected(i, false);
                 resultes.SetItemChecked(i, false);
             }
+            outputPole.Clear();
+
+        }
+
+        //Парсер правил
+        Dictionary<string, string> ParserRulles()
+        {
+            Dictionary<string, string> d = new Dictionary<string, string>();
+            for(int i =0; i < Recepies.Length; i++)
+            {
+                if (Recepies[i] != null)
+                {
+                    string[] temp = Recepies[i].Split(new string[] { " -> " }, StringSplitOptions.None);
+                    d.Add(temp[1], temp[0]);
+                }
+            }
+            return d;
+        }
+
+        void Direct_out()
+        {
+
+        }
+
+        void Reverse_out()
+        {
+
+        }
+
+        void Show_resultes()
+        {
+
         }
 
         //Показать все правила
@@ -158,12 +190,14 @@ namespace Prod_Model
         //Обратный вывод
         private void Reverse_output_Click(object sender, EventArgs e)
         {
+            outputPole.Clear();
 
         }
 
         //Прямой вывод
         private void Direct_output_Click(object sender, EventArgs e)
         {
+            outputPole.Clear();
 
         }
 
@@ -188,5 +222,14 @@ namespace Prod_Model
             }
         }
 
+        private void Show_all_resultes_Click(object sender, EventArgs e)
+        {
+            if (Check_elem.CheckedItems.Count == 0)
+                MessageBox.Show("Ни один элемент не выбран!");
+            else
+            {
+
+            }
+        }
     }
 }

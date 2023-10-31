@@ -40,6 +40,9 @@
             this.Close_rulles = new System.Windows.Forms.Button();
             this.resultes = new System.Windows.Forms.CheckedListBox();
             this.all_results = new System.Windows.Forms.TextBox();
+            this.outputLine = new System.Windows.Forms.TextBox();
+            this.outputPole = new System.Windows.Forms.TextBox();
+            this.Show_all_resultes = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // Direct_output
@@ -143,11 +146,40 @@
             this.all_results.TabIndex = 10;
             this.all_results.Text = "Все исходы";
             // 
+            // outputLine
+            // 
+            this.outputLine.Location = new System.Drawing.Point(1150, 14);
+            this.outputLine.Name = "outputLine";
+            this.outputLine.Size = new System.Drawing.Size(380, 22);
+            this.outputLine.TabIndex = 11;
+            this.outputLine.Text = "Вывод:";
+            // 
+            // outputPole
+            // 
+            this.outputPole.Location = new System.Drawing.Point(1150, 48);
+            this.outputPole.Multiline = true;
+            this.outputPole.Name = "outputPole";
+            this.outputPole.Size = new System.Drawing.Size(380, 599);
+            this.outputPole.TabIndex = 12;
+            // 
+            // Show_all_resultes
+            // 
+            this.Show_all_resultes.Location = new System.Drawing.Point(13, 412);
+            this.Show_all_resultes.Name = "Show_all_resultes";
+            this.Show_all_resultes.Size = new System.Drawing.Size(174, 73);
+            this.Show_all_resultes.TabIndex = 13;
+            this.Show_all_resultes.Text = "Показать все исходы";
+            this.Show_all_resultes.UseVisualStyleBackColor = true;
+            this.Show_all_resultes.Click += new System.EventHandler(this.Show_all_resultes_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1580, 652);
+            this.Controls.Add(this.Show_all_resultes);
+            this.Controls.Add(this.outputPole);
+            this.Controls.Add(this.outputLine);
             this.Controls.Add(this.all_results);
             this.Controls.Add(this.resultes);
             this.Controls.Add(this.Close_rulles);
@@ -180,6 +212,9 @@
         private System.Windows.Forms.Button Close_rulles;
         private System.Windows.Forms.CheckedListBox resultes;
         private System.Windows.Forms.TextBox all_results;
+        private System.Windows.Forms.TextBox outputLine;
+        private System.Windows.Forms.TextBox outputPole;
+        private System.Windows.Forms.Button Show_all_resultes;
     }
 }
 
