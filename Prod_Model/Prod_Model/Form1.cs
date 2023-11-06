@@ -67,7 +67,6 @@ namespace Prod_Model
                     }
                 }
             }
-            MessageBox.Show(cp.ToString());
             file.Close();
         }
 
@@ -159,7 +158,8 @@ namespace Prod_Model
                 if (Recepies[i] != null)
                 {
                     string[] temp = Recepies[i].Split(new string[] { " -> " }, StringSplitOptions.None);
-                    d.Add(temp[1], temp[0]);
+                    if (!d.ContainsKey(temp[1]))
+                        d.Add(temp[1], temp[0]);
                 }
             }
             return d;
@@ -172,12 +172,107 @@ namespace Prod_Model
 
         void Reverse_out()
         {
-
+            Dictionary<string, string> res = ParserRulles();
+            //Необходимая цель
+            string checked_it = "";
+            outputPole.ScrollBars = ScrollBars.Vertical;
+            //Находим цель
+            for (int i = 0; i < resultes.CheckedItems.Count; i++)
+            {
+                checked_it = resultes.CheckedItems[i].ToString();
+            }
+            //Находим цель в списке всех правил и добавляем правило в массив пути
+            string[] way = new string[10];
+            int count = 1;
+            foreach (var values in res)
+            {
+                if (values.Key == checked_it)
+                {
+                    way[0] = values.Value + " -> " + values.Key;
+                    //while (true)
+                    //{
+                    //    string[] temp = values.Value.Split(new string[] { " + " }, StringSplitOptions.None);
+                    //    foreach(var s in temp)
+                    //    {
+                    //        if (Products.Contains(s))
+                    //        {
+                    //            way[count] = 
+                    //        }
+                    //    }
+                    //}
+                }
+            }
+            //С помощью графа в правиле находим элементы которые можно скрафтить
+            //Раскрываем граф, добавляя новые крафты в массив пути
+            //Выводим на экран массив пути
+            outputPole.AppendText(way[0]);
         }
 
-        void Show_resultes()
+        //Случай, когда важен хотя бы один элемент
+        void Show_resultes1()
         {
+            Dictionary<string, string> res = ParserRulles();
+            List<string> checked_it = new List<string>();
+            outputPole.ScrollBars = ScrollBars.Vertical;
+            //Сначала заполняем лист всех выделенных элементов
+            for (int i = 0; i < Check_elem.CheckedItems.Count; i++)
+            {
+                checked_it.Add(Check_elem.CheckedItems[i].ToString());
+            }
+            //Проходимся по всем значениям в словаре правил
+            foreach(var values in res)
+            {
+                //Парсим значения и ищем совпадение между листом отмеченных и листом всех элементов
+                string[] temp = values.Value.Split(new string[] { " + " }, StringSplitOptions.None);
+                //Добавляем в текстбокс правила
+                foreach(string s in temp)
+                {
+                    if (checked_it.Contains(s))
+                    {
+                        outputPole.AppendText(values.Value);
+                        outputPole.AppendText(" -> ");
+                        outputPole.AppendText(values.Key);
+                        outputPole.Text += Environment.NewLine + Environment.NewLine;
+                    }
+                }
 
+            }
+        }
+
+        //Случай, когда необходимо, чтобы в крафте присутствовали только отмеченные элементы
+        void Show_resultes2()
+        {
+            Dictionary<string, string> res = ParserRulles();
+            List<string> checked_it = new List<string>();
+            outputPole.ScrollBars = ScrollBars.Vertical;
+            //Сначала заполняем лист всех выделенных элементов
+            for (int i = 0; i < Check_elem.CheckedItems.Count; i++)
+            {
+                checked_it.Add(Check_elem.CheckedItems[i].ToString());
+            }
+            //Проходимся по всем значениям в словаре правил
+            foreach (var values in res)
+            {
+                //Парсим значения и ищем совпадение между листом отмеченных и листом всех элементов
+                string[] temp = values.Value.Split(new string[] { " + " }, StringSplitOptions.None);
+                int count = 0;
+                //Добавляем в текстбокс правила
+                foreach (string s in temp)
+                {
+                    if (checked_it.Contains(s))
+                    {
+                        count++;
+                    }
+                }
+                if(count == temp.Length)
+                {
+
+                    outputPole.AppendText(values.Value);
+                    outputPole.AppendText(" -> ");
+                    outputPole.AppendText(values.Key);
+                    outputPole.Text += Environment.NewLine + Environment.NewLine;
+                }
+            }
         }
 
         //Показать все правила
@@ -190,13 +285,25 @@ namespace Prod_Model
         //Обратный вывод
         private void Reverse_output_Click(object sender, EventArgs e)
         {
-            outputPole.Clear();
+            if (resultes.CheckedItems.Count == 0)
+                MessageBox.Show("Ни один элемент не выбран!");
+            else
+            {
+                outputPole.Clear();
+                Reverse_out();
+            }
 
         }
 
         //Прямой вывод
         private void Direct_output_Click(object sender, EventArgs e)
         {
+            if (Check_elem.CheckedItems.Count == 0)
+                MessageBox.Show("Ни один элемент не выбран!");
+            else
+            {
+
+            }
             outputPole.Clear();
 
         }
@@ -228,7 +335,9 @@ namespace Prod_Model
                 MessageBox.Show("Ни один элемент не выбран!");
             else
             {
-
+                outputPole.Clear();
+                //Show_resultes1();
+                Show_resultes2();
             }
         }
     }
