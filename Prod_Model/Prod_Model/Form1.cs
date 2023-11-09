@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -170,6 +171,70 @@ namespace Prod_Model
 
         }
 
+        List<string> DFS(string start, Dictionary<string, string> d)
+        {
+            //создаем стэк, куда будем запихивать всю историю
+            Stack<string> s = new Stack<string>();
+            List<string> res = new List<string>();
+            List<string> checked_l = new List<string>();
+            //добавляем в лист путей и в стек первое значение - правило, от которого будем шагать 
+            res.Add(start);
+            s.Push(start);
+            int c = 0;
+            for (int i = 0; i < Check_elem.CheckedItems.Count; i++)
+            {
+                checked_l.Add(Check_elem.CheckedItems[i].ToString());
+            }
+            bool end = false;
+            //идем по стеку, пока тот не пустой
+            while (s.Count != 0)
+            {
+                if (end)
+                    break;
+                //Достаем из стека элемент 
+                string tmp = s.Pop();
+                //Надо проверить, есть ли в правиле элементы, которые можно реализовать
+                var rule = tmp.Split(new string[] { " -> " }, StringSplitOptions.None);
+                var facts = rule[0].Split(new string[] { " + " }, StringSplitOptions.None);
+                //Проходимся по фактам
+                foreach(var value in facts)
+                {
+                    if(c <= 1)
+                    {
+                        if (!checked_l.Contains(value) && value != start)
+                        {
+                            outputPole.Clear();
+                            res.Clear();
+                            outputPole.AppendText("Не выводимо.");
+                            end = true;
+                            break;
+                        }
+                    }
+                    //Если факт можно изготовить, идем дальше
+                    if (Products.Contains(value))
+                    {
+                        //Идем по словарю правил
+                        foreach(var v in d)
+                        {
+                            if(res.Contains(v.Value + " -> " + v.Key))
+                            {
+                                continue;
+                            }
+                            //Нашли необходимое правило - добавили его в стек
+                            if(v.Key == value)
+                            {
+                                res.Add(v.Value + " -> " + v.Key);
+                                s.Push(v.Value + " -> " + v.Key);
+                            }
+                        }
+                    }
+                }
+                c++;
+            }
+
+            return res;
+        }
+
         void Reverse_out()
         {
             Dictionary<string, string> res = ParserRulles();
@@ -182,30 +247,12 @@ namespace Prod_Model
                 checked_it = resultes.CheckedItems[i].ToString();
             }
             //Находим цель в списке всех правил и добавляем правило в массив пути
-            string[] way = new string[10];
-            int count = 1;
-            foreach (var values in res)
+            List<string> rules = DFS(checked_it, res);
+            for(int i = rules.Count - 1; i >=0; i--)
             {
-                if (values.Key == checked_it)
-                {
-                    way[0] = values.Value + " -> " + values.Key;
-                    //while (true)
-                    //{
-                    //    string[] temp = values.Value.Split(new string[] { " + " }, StringSplitOptions.None);
-                    //    foreach(var s in temp)
-                    //    {
-                    //        if (Products.Contains(s))
-                    //        {
-                    //            way[count] = 
-                    //        }
-                    //    }
-                    //}
-                }
+                outputPole.AppendText(rules[i]);
+                outputPole.Text += Environment.NewLine + Environment.NewLine;
             }
-            //С помощью графа в правиле находим элементы которые можно скрафтить
-            //Раскрываем граф, добавляя новые крафты в массив пути
-            //Выводим на экран массив пути
-            outputPole.AppendText(way[0]);
         }
 
         //Случай, когда важен хотя бы один элемент
@@ -286,6 +333,8 @@ namespace Prod_Model
         private void Reverse_output_Click(object sender, EventArgs e)
         {
             if (resultes.CheckedItems.Count == 0)
+                MessageBox.Show("Ни один исход не выбран!");
+            if (Check_elem.CheckedItems.Count == 0)
                 MessageBox.Show("Ни один элемент не выбран!");
             else
             {
@@ -299,12 +348,14 @@ namespace Prod_Model
         private void Direct_output_Click(object sender, EventArgs e)
         {
             if (Check_elem.CheckedItems.Count == 0)
-                MessageBox.Show("Ни один элемент не выбран!");
+                MessageBox.Show("Ни один элемент не выбран!"); 
+            if (resultes.CheckedItems.Count == 0)
+                MessageBox.Show("Ни один исход не выбран!");
             else
             {
+                outputPole.Clear();
 
             }
-            outputPole.Clear();
 
         }
 
