@@ -166,9 +166,79 @@ namespace Prod_Model
             return d;
         }
 
+        List<string> DirectHelper(string final, ref List<string> facts, Dictionary<string, string> d)
+        {
+            //создать целевой список и контейнер для вариантов
+            List<string> res = new List<string>(); 
+            //Идем по списку всех правил
+            foreach(var rule in d)
+            {
+                 //список фактов рассматриваемого правила
+                 List<string> temp_for_res = new List<string>();
+                 var fcts_in_rule = rule.Value.Split(new string[] { " + " }, StringSplitOptions.None);
+                 foreach(var fact in fcts_in_rule)
+                 {
+                     //если факты не содержат элемента в правиле, то сразу переходим к следующему
+                     //или если левая часть правила содержит целевой фактор, то переходим к следующему
+                     if (!facts.Contains(fact) || fcts_in_rule.Contains(final))
+                     {
+                        break;
+                     }
+                     //если содержат, то добавляем факт во временный список
+                     else
+                     {
+                         temp_for_res.Add(fact);
+                     }
+                 }
+                 //если список добавленных фактов равен длине фактов левой части правила, то ок
+                 if(temp_for_res.Count == fcts_in_rule.Length)
+                 {
+                     //Добавляем правило в результат
+                     res.Add(rule.Value + " -> " + rule.Key);
+                     //Обновляем факты фактами, которые еще не добавлены
+                     if (!facts.Contains(rule.Key))
+                     {
+                         facts.Add(rule.Key);
+                     }
+                 }
+            }
+            int c = 0;
+            foreach(var fact in res)
+            {
+                var fcts_in_rule = fact.Split(new string[] { " -> " }, StringSplitOptions.None);
+                if (fcts_in_rule[1].Equals(final))
+                {
+                    c++;
+                }
+            }
+            if(c == 0)
+            {
+                res.Clear();
+                outputPole.AppendText("Не выводимо.");
+            }
+            return res;
+        }
+
         void Direct_out()
         {
-
+            Dictionary<string, string> d = ParserRulles();
+            string final = "";
+            outputPole.ScrollBars = ScrollBars.Vertical;
+            List<string> fasct = new List<string>();
+            for (int i = 0; i < Check_elem.CheckedItems.Count; i++)
+            {
+                fasct.Add(Check_elem.CheckedItems[i].ToString());
+            }
+            for (int i = 0; i < resultes.CheckedItems.Count; i++)
+            {
+                final = resultes.CheckedItems[i].ToString();
+            }
+            List<string> rules = DirectHelper(final, ref fasct, d);
+            for (int i = rules.Count - 1; i >= 0; i--)
+            {
+                outputPole.AppendText(rules[i]);
+                outputPole.Text += Environment.NewLine + Environment.NewLine;
+            }
         }
 
         List<string> DFS(string start, Dictionary<string, string> d)
@@ -178,8 +248,14 @@ namespace Prod_Model
             List<string> res = new List<string>();
             List<string> checked_l = new List<string>();
             //добавляем в лист путей и в стек первое значение - правило, от которого будем шагать 
-            res.Add(start);
-            s.Push(start);
+            foreach(var r in d)
+            {
+                if(r.Key == start)
+                {
+                    s.Push(r.Value + " -> " + r.Key);
+                    res.Add(r.Value + " -> " + r.Key);
+                }
+            }
             int c = 0;
             for (int i = 0; i < Check_elem.CheckedItems.Count; i++)
             {
@@ -199,37 +275,61 @@ namespace Prod_Model
                 //Проходимся по фактам
                 foreach(var value in facts)
                 {
-                    if(c <= 1)
+                    //можно ли скрафтить?
+                    if (Products.Contains(value))
                     {
-                        if (!checked_l.Contains(value) && value != start)
+                        bool flag_for_d = false;
+                        //проходимся по словарю всех правил и ищем правило крафта
+                        foreach(var v in d)
                         {
-                            outputPole.Clear();
+                            if (flag_for_d)
+                            {
+                                break;
+                            }
+
+                            //нашли нужное правило
+                            if(v.Key == value)
+                            {
+                                if (checked_l.Contains(value))
+                                {
+                                    res.Add(v.Value + " -> " + v.Key);
+                                }
+                                else
+                                {
+                                    //парсим правило и проверяем, можно ли скрафтить это из наших фактов
+                                    var pars_temp = v.Value.Split(new string[] { " + " }, StringSplitOptions.None);
+                                    foreach (var par in pars_temp)
+                                    {
+                                        //если факты не содержат хотя бы один аргумент, то добавляем в стек правило
+                                        if (!checked_l.Contains(par))
+                                        {
+                                            flag_for_d = true;
+                                            s.Push(v.Value + " -> " + v.Key);
+                                        }
+                                    }
+                                    //если флаг остался false, то добавляем правило в список результатов
+                                    //поскольку его можно скрафтить из наших фактов
+                                    if (!flag_for_d)
+                                    {
+                                        res.Add(v.Value + " -> " + v.Key);
+                                        flag_for_d = true;
+                                    }
+                                }
+                               
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (!checked_l.Contains(value))
+                        {
                             res.Clear();
                             outputPole.AppendText("Не выводимо.");
                             end = true;
                             break;
                         }
                     }
-                    //Если факт можно изготовить, идем дальше
-                    if (Products.Contains(value))
-                    {
-                        //Идем по словарю правил
-                        foreach(var v in d)
-                        {
-                            if(res.Contains(v.Value + " -> " + v.Key))
-                            {
-                                continue;
-                            }
-                            //Нашли необходимое правило - добавили его в стек
-                            if(v.Key == value)
-                            {
-                                res.Add(v.Value + " -> " + v.Key);
-                                s.Push(v.Value + " -> " + v.Key);
-                            }
-                        }
-                    }
                 }
-                c++;
             }
 
             return res;
@@ -354,7 +454,7 @@ namespace Prod_Model
             else
             {
                 outputPole.Clear();
-
+                Direct_out();
             }
 
         }
