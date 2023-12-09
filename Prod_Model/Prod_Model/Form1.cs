@@ -169,10 +169,13 @@ namespace Prod_Model
         List<string> DirectHelper(string final, ref List<string> facts, Dictionary<string, string> d)
         {
             //создать целевой список и контейнер для вариантов
-            List<string> res = new List<string>(); 
+            List<string> res = new List<string>();
+            bool flag_final = false;
             //Идем по списку всех правил
             foreach(var rule in d)
             {
+                if (flag_final)
+                    break;
                  //список фактов рассматриваемого правила
                  List<string> temp_for_res = new List<string>();
                  var fcts_in_rule = rule.Value.Split(new string[] { " + " }, StringSplitOptions.None);
@@ -195,6 +198,11 @@ namespace Prod_Model
                  {
                      //Добавляем правило в результат
                      res.Add(rule.Value + " -> " + rule.Key);
+                    if(rule.Key == final)
+                    {
+                        flag_final = true;
+                        break;
+                    }
                      //Обновляем факты фактами, которые еще не добавлены
                      if (!facts.Contains(rule.Key))
                      {
@@ -234,14 +242,14 @@ namespace Prod_Model
                 final = resultes.CheckedItems[i].ToString();
             }
             List<string> rules = DirectHelper(final, ref fasct, d);
-            for (int i = rules.Count - 1; i >= 0; i--)
+            for (int i = 0; i < rules.Count; i++)
             {
                 outputPole.AppendText(rules[i]);
                 outputPole.Text += Environment.NewLine + Environment.NewLine;
             }
         }
 
-        List<string> DFS(string start, Dictionary<string, string> d)
+        List<string> ReverseHelper(string start, Dictionary<string, string> d)
         {
             //создаем стэк, куда будем запихивать всю историю
             Stack<string> s = new Stack<string>();
@@ -254,9 +262,9 @@ namespace Prod_Model
                 {
                     s.Push(r.Value + " -> " + r.Key);
                     res.Add(r.Value + " -> " + r.Key);
+                    break;
                 }
             }
-            int c = 0;
             for (int i = 0; i < Check_elem.CheckedItems.Count; i++)
             {
                 checked_l.Add(Check_elem.CheckedItems[i].ToString());
@@ -278,6 +286,13 @@ namespace Prod_Model
                     //можно ли скрафтить?
                     if (Products.Contains(value))
                     {
+                        if(value == start)
+                        {
+                            end = true;
+                            outputPole.AppendText("Не выводимо.");
+                            res.Clear();
+                            break;
+                        }
                         bool flag_for_d = false;
                         //проходимся по словарю всех правил и ищем правило крафта
                         foreach(var v in d)
@@ -347,7 +362,7 @@ namespace Prod_Model
                 checked_it = resultes.CheckedItems[i].ToString();
             }
             //Находим цель в списке всех правил и добавляем правило в массив пути
-            List<string> rules = DFS(checked_it, res);
+            List<string> rules = ReverseHelper(checked_it, res);
             for(int i = rules.Count - 1; i >=0; i--)
             {
                 outputPole.AppendText(rules[i]);
